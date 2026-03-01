@@ -32,3 +32,10 @@ create policy "Allow all on flashcards" on flashcards for all using (true) with 
 -- Storage bucket for card images
 insert into storage.buckets (id, name, public) values ('card-images', 'card-images', true);
 create policy "Allow all on card-images" on storage.objects for all using (bucket_id = 'card-images') with check (bucket_id = 'card-images');
+
+
+-- Add parent_id to support nested modules
+ALTER TABLE modules ADD COLUMN parent_id uuid references modules(id) on delete cascade;
+
+-- Index for performance when fetching children
+CREATE INDEX idx_modules_parent_id ON modules(parent_id);
